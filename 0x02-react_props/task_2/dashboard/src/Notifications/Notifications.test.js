@@ -1,43 +1,35 @@
-import React from 'react';
-import { shallow } from 'enzyme';
-import Notifications from './Notifications';
+import React from "react";
+import { shallow } from "enzyme";
+import { getLatestNotification } from "../utils/utils";
+import Notifications from "./Notifications";
+import NotificationItem from "./NotificationItem";
 
-describe('<Notification />', () => {
-  it('renders without crashing', () => {
+describe("Notification tests", () => {
+  it("renders Notification component without crashing", () => {
+    const component = shallow(<Notifications />);
+
+    expect(component).toBeDefined();
+  });
+
+  it("renders correct list items", () => {
     const wrapper = shallow(<Notifications />);
-    shallow(<Notifications />);
+    expect(wrapper.find("ul").children()).toHaveLength(3);
+    expect(wrapper.find("ul").childAt(0).html()).toEqual('<li data-notification-type="default">New course available</li>');
+    expect(wrapper.find("ul").childAt(1).html()).toEqual('<li data-notification-type="urgent">New resume available</li>');
+    expect(wrapper.find("ul").childAt(2).html()).toEqual(`<li data-urgent=\"true\">${getLatestNotification()}</li>`);
   });
 
-  it('Notification Item with html', () => {
-    const wrapper = shallow(<Notifications displayDrawer />);
-    const nItem = wrapper.find('NotificationItem');
-    expect(nItem).toBeDefined();
-    expect(nItem.first().html()).toEqual(
-      '<li data-notification-type="default">New course available</li>'
-    );
-  });
-
-  it('menuItem with displayDrawer false', () => {
+  it("renders an unordered list", () => {
     const wrapper = shallow(<Notifications />);
-    const mItem = wrapper.find('div.menuItem');
-    expect(mItem).toHaveLength(1);
+    expect(wrapper.find("ul").children()).toHaveLength(3);
+    wrapper.find("ul").forEach((node) => {
+      expect(node.equals(<NotificationItem />));
+    });
   });
 
-  it('Notification with displayDrawer false', () => {
-    const wrapper = shallow(<Notifications />);
-    const dNoti = wrapper.find('div.Notifications');
-    expect(dNoti).toHaveLength(0);
-  });
+  it("renders correct text", () => {
+    const component = shallow(<Notifications />);
 
-  it('menuItem with displayDrawer true', () => {
-    const wrapper = shallow(<Notifications displayDrawer />);
-    const mItem = wrapper.find('div.menuItem');
-    expect(mItem).toHaveLength(1);
-  });
-
-  it('displayDrawer is true', () => {
-    const wrapper = shallow(<Notifications displayDrawer />);
-    const dNoti = wrapper.find('div.Notifications');
-    expect(dNoti).toHaveLength(1);
+    expect(component.find("p").prop("children")).toBe("Here is the list of notifications");
   });
 });
